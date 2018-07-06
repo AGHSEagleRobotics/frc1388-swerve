@@ -14,7 +14,9 @@ public class SwerveModule {
 		m_steerMotor = steerMotor;
 		m_steerEncoder = steerEncoder;
 	}
-	
+	public SwerveModule() {
+		
+	}
 	//gets angle
 	public double getAngle() {
 		double volt = m_steerEncoder.getVoltage();
@@ -35,7 +37,33 @@ public class SwerveModule {
 		}
 		m_steerMotor.set(0);
 	}
-
+	
+	static double normalizeAngle(double inputAngle) {
+		double normAngle = inputAngle % 360;
+		if(normAngle < 0) {
+			normAngle += 360;
+		} 
+		return normAngle;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * finds the shortest distance based off the current angle and target angle 
+	 * @param targetAngle the angle that we are trying to get to 
+	 * @param currentAngle the angle that we are at
+	 * @return offset of the current angle and the target angle
+	 */
+	public double steerOffset(double targetAngle, double currentAngle){
+		double offset;
+		
+		offset = targetAngle - currentAngle;
+		
+		return offset;
+	}
+	
 	
 	
 }
