@@ -58,10 +58,19 @@ public class SwerveModule {
 	 */
 	public double steerOffset(double targetAngle, double currentAngle){
 		double offset;
+		double absOffset;
 		
-		offset = targetAngle - currentAngle;
+		offset = ((targetAngle - currentAngle));
+		absOffset = Math.abs(offset);
 		
-		return offset;
+		if(absOffset <= 90)
+				return offset;
+		else 
+			offset = (absOffset % 180) - 180;
+			if(targetAngle < currentAngle)
+				return -offset;
+			else
+				return offset;
 	}
 	
 	
