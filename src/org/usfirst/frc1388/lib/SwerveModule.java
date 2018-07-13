@@ -8,15 +8,18 @@ public class SwerveModule {
 	private SpeedController m_driveMotor;
 	private SpeedController m_steerMotor;
 	private AnalogInput m_steerEncoder;
+	private final double k_steer_threshold = 2;
 	
 	public SwerveModule(SpeedController driveMotor, SpeedController steerMotor, AnalogInput steerEncoder ) {
 		m_driveMotor = driveMotor;
 		m_steerMotor = steerMotor;
 		m_steerEncoder = steerEncoder;
 	}
+	
 	public SwerveModule() {
 		
 	}
+	
 	//gets angle
 	public double getAngle() {
 		double volt = m_steerEncoder.getVoltage();
@@ -45,11 +48,7 @@ public class SwerveModule {
 		} 
 		return normAngle;
 	}
-	
-	
-	
-	
-	
+
 	/**
 	 * finds the shortest distance based off the current angle and target angle 
 	 * @param targetAngle the angle that we are trying to get to 
@@ -73,6 +72,29 @@ public class SwerveModule {
 				return offset;
 	}
 	
+	/**
+	 * setting the angles of the steer motors at a given speed, using the threshold 
+	 * @param angleChange the angle that we are turning to 
+	 * @param speed how fast the motor will actually turn
+	 * @return difference between current angle and angle change
+	 */
+	public double steerMotorTo(double angleChange, double speed) {
+		
+		if(angleChange > k_steer_threshold) {
+			m_steerMotor.set(speed);
+		} else if (angleChange < -k_steer_threshold) {
+			m_steerMotor.set(-speed);
+		}
+		
+		return steerOffset(angleChange, getAngle());
+	}
 	
-	
+	/**
+	 * setting the angles of the steer motors at max speed (1.0), using the threshold
+	 * @param angleChange the angle that we are turning to
+	 * @return difference between current angle and angle changefj  s 
+	 */
+	public double steerMotorTo(double angleChange) {
+		return steerMotorTo(angleChange, 1.0);
+	}
 }
