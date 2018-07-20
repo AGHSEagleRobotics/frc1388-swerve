@@ -16,8 +16,14 @@ public class SwerveModule {
 		m_steerEncoder = steerEncoder;
 	}
 	
-	public SwerveModule() {
-		
+	public SwerveModule() {}//for unit test, FIND BETTER WAY
+	
+	/**
+	 * sets the pwr of the drive motor
+	 * @param pwr motor power
+	 */
+	public void setDrivePwr(double pwr) {
+		m_steerMotor.set(pwr);
 	}
 	
 	//gets angle
@@ -26,19 +32,17 @@ public class SwerveModule {
 		double angle = volt * 360/5; // 5 volts max = 360 degrees
 		return angle;
 	}
-	
-	//TODO: add threshold 
+	 
 	//TODO: make it slow down the closer to the target it is
-	//TODO: able to identify what angle is closer, as you cross zero
 	//TODO: option 90 degrees reverse the wheel pwr
+	/**
+	 * moves the motor in the correct direction with the correct pwr
+	 * @param targetAngle angle that we are trying to get to 
+	 */
+	
 	public void setSteerAngle(double targetAngle) {
-		if(targetAngle > getAngle()) {
-			m_steerMotor.set(.5);
-		}
-		else if(targetAngle < getAngle()){
-			m_steerMotor.set(-0.5);
-		}
-		m_steerMotor.set(0);
+		double offset = steerOffset(targetAngle, getAngle());
+		steerMotorToOffset(offset, .5);
 	}
 	
 	static double normalizeAngle(double inputAngle) {
@@ -59,42 +63,44 @@ public class SwerveModule {
 		double offset;
 		double absOffset;
 		
-		offset = ((targetAngle - currentAngle));
+		offset = ((targetAngle - currentAngle));//gives the difference of the angles
 		absOffset = Math.abs(offset);
-		
-		if(absOffset <= 90)
-				return offset;
-		else 
-			offset = (absOffset % 180) - 180;
-			if(targetAngle < currentAngle)
+
+		if(absOffset <= 180)//not crossing the zero boundary
+			return offset;
+		else {
+			offset = (absOffset % 180) - 180;//getting the difference when crossing zero
+
+			if(targetAngle < currentAngle)//finds what way the zero is crossed
 				return -offset;
 			else
 				return offset;
+		}
 	}
 	
 	/**
 	 * setting the angles of the steer motors at a given speed, using the threshold 
-	 * @param angleChange the angle that we are turning to 
+	 * @param offset the angle that we are turning to 
 	 * @param speed how fast the motor will actually turn
 	 * @return difference between current angle and angle change
 	 */
-	public double steerMotorTo(double angleChange, double speed) {
+	public double steerMotorToOffset(double offset, double speed) {
 		
-		if(angleChange > k_steer_threshold) {
+		if(offset > k_steer_threshold) {
 			m_steerMotor.set(speed);
-		} else if (angleChange < -k_steer_threshold) {
+		} else if (offset < -k_steer_threshold) {
 			m_steerMotor.set(-speed);
 		}
-		
-		return steerOffset(angleChange, getAngle());
+		m_steerMotor.set(0);
+		return steerOffset(offset, getAngle());
 	}
 	
 	/**
 	 * setting the angles of the steer motors at max speed (1.0), using the threshold
-	 * @param angleChange the angle that we are turning to
-	 * @return difference between current angle and angle changefj  s 
+	 * @param offset the angle that we are turning to
+	 * @return difference between current angle and angle changed 
 	 */
-	public double steerMotorTo(double angleChange) {
-		return steerMotorTo(angleChange, 1.0);
+	public double steerMotorToOffset(double offset) {
+		return steerMotorToOffset(offset, 1.0);
 	}
 }

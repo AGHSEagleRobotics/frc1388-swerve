@@ -42,6 +42,8 @@ class SwerveModuleTest {
 		assertEquals(-50, swerveModule.steerOffset(340,30), "Target = 340, Current = 30"); 		
 		assertEquals(-150, swerveModule.steerOffset(270,60), "Target = 270, Current = 60");
 		assertEquals(150, swerveModule.steerOffset(60,270), "Target = 60, Current = 270");
+		assertEquals(-100, swerveModule.steerOffset(100,200), "Target = 100, Current = 200");
+		assertEquals(100, swerveModule.steerOffset(200,100), "Target = 200, Current = 100");
 		assertEquals(90, swerveModule.steerOffset(0,270), "Target = 0, Current = 270");
 	}
 	
